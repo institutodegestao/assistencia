@@ -67,7 +67,8 @@ num_sol_antes = as.numeric(nrow(hist_solic_nova[hist_solic_nova$data_solicitacao
 as.character(format(max_dt_sol, "%d/%m/%Y"))
 lable_ultima = paste("Solicitacoes em ", format(max_dt_sol, "%d/%m/%Y"))
 lable_ultima_anterior = paste("Solicitacoes em ", format(max_dt_sol-1, "%d/%m/%Y"))
-sol_por_data <- hist_solic_nova %>% group_by(data_solicitacao) %>% summarize(total = sum(cont))
+#sol_por_data <- hist_solic_nova %>% group_by(data_solicitacao) %>% summarize(total = sum(cont))
+
 
 #hist_solic_nova_fila = hist_solic_nova[, c(6,8,9,12,19,2,26)]
 
@@ -81,3 +82,9 @@ hist_solic_nova$chave = paste(hist_solic_nova$cod_solicitacao, hist_solic_nova$d
 #hist_solic_nova[hist_solic_nova$chave==agrega$chave]
 
 hist_solic_nova_final = hist_solic_nova %>% filter(chave %in% agrega$chave)
+
+calculo <- hist_solic_nova_final %>% group_by(data_solicitacao) %>% summarize(totals = round(median(posicao_fila_espera),digits = 0 ))
+calculo
+calculo1 <- hist_solic_nova_final %>% group_by(data_solicitacao, tipo_leito_reg2) %>% summarize(totals = round(median(posicao_fila_espera),digits = 0 ))
+calculo1
+calculo1 %>% filter(tipo_leito_reg2 == "UTI")
