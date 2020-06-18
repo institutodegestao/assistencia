@@ -1,0 +1,256 @@
+---
+title: "Sistema Assistencia - COVID-19"
+output:
+   flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    theme: default
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+source('./global.R') # carrega o arquivo global, com bibliotecas e ETL
+
+```
+
+Solicitacao de Leitos {data-icon="fa-signal"}
+===================================== 
+
+Column {.sidebar data-width=140} 
+-------------------------------------
+
+```{r}
+dateInput('sel_dt_sol', 'Data', value = max_dt_sol, min = min_dt_sol, max = max_dt_sol, format = 'dd/mm/yyyy')
+ 
+```
+
+### Ultima atualizacao
+
+```{r}
+valueBox(Sys.time())
+```
+
+### Assistencia ate
+
+```{r}
+valueBox(max_dt_sol)
+```
+
+Row {data-height=100}
+-------------------------------------
+### Total de Solicitacoes
+
+```{r}
+renderValueBox({
+ valueBox(sol_pac %>% filter(data_sol <= input$sel_dt_sol) %>% summarize(total = sum(sol)))
+})
+```
+
+Row {data-height=100 .tabset .tabset-fade}
+-------------------------------------
+
+### Solicitacoes por Unidade
+
+```{r}
+selectizeInput('selec_unid', 'Unidade', choices = (c('TODAS', sort(as.character(unique(hist_solic_nova$unidade_solicitante))))), selected = 'TODAS')
+
+
+```
+
+### Fila por Unidade
+
+```{r}
+
+```
+  
+### A definir
+
+```{r}
+
+```
+
+Alteracao de Leitos {data-icon="fa-signal"}
+===================================== 
+
+Column {.sidebar data-width=140} 
+-------------------------------------
+
+```{r}
+# dateInput('sel_dt_alt', 'Data', value = max_dt_alt, min = min_dt_alt, max = max_dt_alt, format = 'dd/mm/yyyy')
+
+```
+
+### Ultima atualizacao
+
+```{r}
+valueBox(Sys.time())
+```
+
+### Alteracoes ate
+
+```{r}
+valueBox(max_dt_alt)
+```
+
+
+
+```{r}
+
+```
+
+Row {data-height=100}
+-------------------------------------
+### Total de Alteracoes
+
+```{r}
+renderValueBox({
+ valueBox(leito_motivo %>% summarize(total = sum(num_leito)))
+})
+
+# renderValueBox({
+#  valueBox(leito_motivo %>% filter(data_alteracao <= input$sel_dt_alt) %>% summarize(total = sum(num_leito)))
+# })
+
+```
+
+### A Definir
+
+```{r}
+
+```
+
+Row {.tabset .tabset-fade}
+-------------------------------------
+### Por Motivo
+
+```{r}
+selectizeInput('selec_unid_exec1', 'Unidade', choices = (c('TODAS', sort(as.character(unique(leito_motivo$un_executante))))), selected = 'TODAS')
+
+renderPlotly({
+  
+  if(input$selec_unid_exec1 == "TODAS") {
+  mot_bloq <- leito_motivo 
+  }
+  
+  else {  
+  mot_bloq <- leito_motivo %>% filter(un_executante == input$selec_unid_exec1)
+  }
+  
+plot_ly() %>%
+add_pie(data = count(mot_bloq, motivo_alteracao_leito), labels = ~motivo_alteracao_leito, values = ~n, name = "Motivo", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(1, 1))) %>%
+  layout(
+    title = "Motivo de Alteracao de Leitos",
+    legend = list(x = 0, y = 0.9)
+  )
+}) 
+ 
+```
+
+### Por Tipo de Leito
+
+```{r}
+selectizeInput('selec_unid_exec2', 'Unidade', choices = (c('TODAS', sort(as.character(unique(leito_motivo$un_executante))))), selected = 'TODAS')
+
+
+renderPlotly({
+  
+  if(input$selec_unid_exec2 == "TODAS") {
+  tipo_leito <- leito_motivo 
+  }
+  
+  else {  
+  tipo_leito <- leito_motivo %>% filter(un_executante == input$selec_unid_exec2)
+  }
+  
+plot_ly() %>%
+add_pie(data = count(tipo_leito, tp_leito_executante), labels = ~tp_leito_executante, values = ~n, name = "Motivo", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(1, 1))) %>%
+  layout(
+    title = "Tipo de Leito Executante",
+    legend = list(x = 0, y = 0.9)
+  )
+  
+  
+  # Opçao em Gráfico de Barras
+  # if(input$selec_unid_exec == "TODAS") {
+  # bloq_leito <- leito_motivo %>% group_by(tp_leito_executante) %>% summarize(total = sum(num_leito))
+  # }
+  # 
+  # else {  
+  # bloq_leito <- leito_motivo %>% group_by(tp_leito_executante) %>% filter(un_executante == input$selec_unid_exec)%>% summarize(total = sum(num_leito))
+  # }
+  # 
+  # x <- bloq_leito$tp_leito_executante
+  # y <- bloq_leito$total
+  # 
+  # data <- data.frame(x, y)
+  # graf_bloq <- plot_ly(data, x = ~x, y = ~y, type = 'bar', name = 'Leitos',     domain = list(x=c(0.6, 1), y=c(0,1)), marker = list(color = 'rgb(139,0,0)'))
+  # graf_bloq <- graf_bloq %>% layout(
+  # xaxis = list(title = "Tipo de Leito"),
+  # yaxis = list(title = "Quantidade de Leitos"),
+  # margin = list(b = 100),
+  # barmode = 'group')
+  # 
+  # graf_bloq
+
+})
+
+```
+
+### Por Especialidade
+
+```{r}
+selectizeInput('selec_unid_exec3', 'Unidade', choices = (c('TODAS', sort(as.character(unique(leito_motivo$un_executante))))), selected = 'TODAS')
+
+renderPlotly({
+  
+  if(input$selec_unid_exec3 == "TODAS") {
+  espec_leito <- leito_motivo 
+  }
+  
+  else {  
+  espec_leito <- leito_motivo %>% filter(un_executante == input$selec_unid_exec3)
+  }
+  
+plot_ly() %>%
+add_pie(data = count(espec_leito, espec_leito_executante), labels = ~espec_leito_executante, values = ~n, name = "Especialidade", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(1, 1))) %>%
+  layout(
+    title = "Especialidade do Leito Executante",
+    legend = list(x = 0, y = 0.9)
+  )
+})
+```
+  
+### Quadro Geral
+
+```{r}
+p1 <-
+  # plot_ly(
+  #   type = 'table',
+  #   domain = list(x=c(0, 0.5), y=c(0,1)),
+  #   header = list(values = c("Código do Leito", "Motivo Alteração"),
+  #   fill = list(color = c("#A0D1FF", "#41A4FF")),
+  #   font = list(family = "Arial", size = 14, color = "white")),
+  #   cells = list(values = rbind(leito_motivo$cod_leito, leito_motivo$desc_saida_alteracao))
+  # )
+  datatable(leito_motivo, options=list(scrollY = "300px", columnDefs = list(list(visible=FALSE, targets=c(3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19)))))
+# Exibe as colunas: 1,2,6,12,13 e 18
+p1
+
+```
+
+Em Construcao {data-icon="fa-signal"}
+===================================== 
+
+```{r painel controle de tornozeleiras}
+
+```
+
+Row {.tabset .tabset-fade data-height=500}
+-------------------------------------
+### A Definir
+
+```{r}
+
+```
