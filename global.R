@@ -41,6 +41,8 @@ hist_solic_nova$data_informacao_historico <- as.Date(hist_solic_nova$data_inform
 
 hist_solic_nova$data_historico_solicitacao <- as.Date(hist_solic_nova$data_historico_solicitacao, format = "%d/%m/%y")
 
+#DF PARA CRIAR O DATATABLE
+dt_hist_solic_nova = hist_solic_nova[ , c(1,6,9, 19)]
 
 # calcular data máxima e mínima
 max_dt_sol <- max(hist_solic_nova$data_solicitacao)
