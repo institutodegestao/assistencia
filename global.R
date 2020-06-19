@@ -96,7 +96,11 @@ lable_ultima_enf = paste("Solicitacoes de ENFERMARIA em ", format(max_dt_sol, "%
 
 
 grafico_sol = sol_pac[ , c(8,12, 14, 16)]
-grafico_sol <-  grafico_sol %>% tidyr::pivot_wider(names_from = c(tipo2), values_from = sol, values_fn = sum)
+
+grafico_sol <- grafico_sol %>% group_by(uni_sol, tipo2, data_sol) %>% summarise(sol = sum(sol))
+
+grafico_sol <-  grafico_sol %>% tidyr::pivot_wider(names_from = c(tipo2), values_from = sol)
+
 grafico_sol <- grafico_sol %>% replace(is.na(.), 0)
 grafico_sol["TOTAL"] = grafico_sol["ENFERMARIA"] + grafico_sol["UTI"]
 
