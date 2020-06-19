@@ -52,7 +52,7 @@ hist_solic_nova["cont"]=1
 #CRIA O DATAFRAME PARA PLOTAR O GRAFICO
 grafico_hist_solic_nova = hist_solic_nova[ , c(6,2, 9, 26)]
 
-grafico <-  grafico_hist_solic_nova %>% tidyr::pivot_wider(names_from = c(tipo_leito_sol2), values_from = cont, values_fn = sum)
+grafico <-  grafico_hist_solic_nova %>% tidyr::pivot_wider(names_from = c("tipo_leito_sol2"), values_from = "cont", values_fn = sum)
 grafico <- grafico %>% replace(is.na(.), 0)
 #grafico = dcast(grafico_hist_solic_nova, data_solicitacao ~ tipo_leito_sol2, value.var = "cont")
 grafico["TOTAL"] = grafico["ENFERMARIA"] + grafico["UTI"]
