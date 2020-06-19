@@ -48,30 +48,64 @@ renderValueBox({
 })
 ```
 
+### Total de Solicitacoes
+
+```{r}
+renderValueBox({
+ valueBox(caption = lable_ultima, sol_pac %>% filter(data_sol == max_dt_sol) %>% summarize(total = sum(sol)))
+})
+```
+
+### Total de Solicitacoes
+
+```{r}
+renderValueBox({
+ valueBox(caption = lable_ultima_uti, sol_pac %>% filter(data_sol == max_dt_sol, tipo2 == "UTI") %>% summarize(total = sum(sol)))
+})
+```
+
+### Total de Solicitacoes
+
+```{r}
+renderValueBox({
+ valueBox(caption = lable_ultima_enf, sol_pac %>% filter(data_sol == max_dt_sol, tipo2 == "ENFERMARIA") %>% summarize(total = sum(sol)))
+})
+```
+
 Row {.tabset .tabset-fade}
 -------------------------------------
 
 ### Solicitacoes por Unidade
 
 ```{r}
-selectizeInput('selec_unid', 'Unidade', choices = (c('TODAS', sort(as.character(unique(sol_pac$uni_sol))))), selected = 'TODAS')
+selectizeInput('selec_unid', 'Unidade Solicitante', choices = (c('TODAS', sort(as.character(unique(sol_pac$uni_sol))))), selected = 'TODAS')
 
 renderPlotly({
 
   if(input$selec_unid == "TODAS") {
-  sol_por_data <- sol_pac %>% group_by(data_sol) %>% summarize(total = sum(sol))
+  sol_por_data <- grafico_sol %>% group_by(data_sol) %>% summarize(total = sum(TOTAL), uti = sum(UTI), enf = sum(ENFERMARIA))
   }
 
   else {
-  sol_por_data <- sol_pac %>% group_by(data_sol)  %>% filter(uni_sol == input$selec_unid) %>% summarize(total = sum(sol))
+  sol_por_data <- grafico_sol %>% filter(uni_sol == input$selec_unid) %>% group_by(data_sol) %>%  summarize(total = sum(TOTAL), uti = sum(UTI), enf = sum(ENFERMARIA))
   }
 
   
 # GRÁFICO DE BARRAS  
- x <- sol_por_data$data_sol
-  y <- sol_por_data$total
+  x  <- sol_por_data$data_sol
+  y  <- sol_por_data$total
+  y2 <- sol_por_data$uti
+  y3 <- sol_por_data$enf
   data <- data.frame(x, y)
-  evol_solicitacao <- plot_ly(data, x = ~x, y = ~y, type = 'bar', name = 'Confirmados',     domain = list(x=c(0.6, 1), y=c(0,1)), marker = list(color = 'rgb(0,139,0)'))
+  evol_solicitacao <- plot_ly(data, x = ~x, y = ~y, type = 'bar', name = 'TOTAL',     domain = list(x=c(0.6, 1), y=c(0,1)), marker = list(color = "orange"))
+  evol_solicitacao <- evol_solicitacao %>% add_trace (y = ~y2, type = 'scatter', mode = 'lines',
+       name = "UTI",
+       line = list(color = "blue"),
+       marker = list(color = "blue"))
+  evol_solicitacao <- evol_solicitacao %>% add_trace (y = ~y3, type = 'scatter', mode = 'lines',
+       name = "ENF",
+       line = list(color = "darkgreen"),
+       marker = list(color = "darkgreen"))
   evol_solicitacao <- evol_solicitacao %>% layout(
   xaxis = list(title = "Data"),
   yaxis = list(title = "Solicitações"),
@@ -86,40 +120,37 @@ renderPlotly({
 ### Fila por Unidade
 
 ```{r}
-selectizeInput('selec_unidade', 'Unidade', choices = (c('TODAS', sort(as.character(unique(hist_solic_nova$unidade_solicitante))))), selected = 'TODAS')
+selectizeInput('selec_unidade', 'Unidade Solicitante', choices = (c('TODAS', sort(as.character(unique(hist_solic_nova$unidade_solicitante))))), selected = 'TODAS')
 
 renderPlotly({
 
- if(input$selec_unidade != "TODAS") {
- #calculo <- round(median(hist_solic_nova_final$posicao_fila_espera), digits = 0)
- #grafico 
+ if(input$selec_unidade == "TODAS") {
+   calculo <- grafico %>% group_by(data_solicitacao) %>% summarize(total = sum(TOTAL), uti = sum(UTI), enf = sum(ENFERMARIA))
  }
 
- # else {
- #hist_temp = hist_solic_nova_final %>% filter(tipo_leito_reg2 == input$selec_tp_leito )
- #calculo <- round(median(hist_temp$posicao_fila_espera) , digits = 0)
- # calculo <- hist_solic_nova %>% group_by(data_solicitacao)  %>% filter(unidade_solicitante == input$selec_unidade) %>% summarize(totals = sum(cont))
-#}
-#grafico1 <- grafico %>% group_by(data_solicitacao) %>%  summarize(totals = sum(geralMM7))
+  else {
+    calculo <- grafico %>% filter(unidade_solicitante == input$selec_unidade) %>% group_by(data_solicitacao) %>% summarize(total = sum(TOTAL), uti = sum(UTI), enf = sum(ENFERMARIA))
+}
+
 
 # GRÁFICO DE BARRAS  
-  x <- grafico$data_solicitacao
-  y <- ceiling(grafico$geralMM7)
-  y2 <- ceiling(grafico$utiMM7)
-  y3 <- ceiling(grafico$enfMM7)
+  x <- calculo$data_solicitacao
+  y <-  calculo$total#ceiling(grafico$geralMM7)
+  y2 <- calculo$uti#ceiling(grafico$utiMM7)
+  y3 <- calculo$enf#ceiling(grafico$enfMM7)
   data <- data.frame(x, y)
-  evol_solicitacao <- plot_ly(data, x = ~x, y = ~y, type = 'bar', name = 'Fila',     domain = list(x=c(0.6, 1), y=c(0,1)), marker = list(color = 'rgb(0,0,139)'))
+  evol_solicitacao <- plot_ly(data, x = ~x, y = ~y, type = 'bar', name = 'TOTAL',     domain = list(x=c(0.6, 1), y=c(0,1)), marker = list(color = "orange"))
   evol_solicitacao <- evol_solicitacao %>% add_trace (y = ~y2, type = 'scatter', mode = 'lines',
        name = "UTI",
-       line = list(color = "orange"),
-       marker = list(color = "darkorange"))
+       line = list(color = "blue"),
+       marker = list(color = "blue"))
   evol_solicitacao <- evol_solicitacao %>% add_trace (y = ~y3, type = 'scatter', mode = 'lines',
        name = "ENF",
        line = list(color = "darkgreen"),
        marker = list(color = "darkgreen"))
   evol_solicitacao <- evol_solicitacao %>% layout(
   xaxis = list(title = "Data"),
-  yaxis = list(title = "Mediana da Fila"),
+  yaxis = list(title = "Fila"),
   margin = list(b = 100),
   barmode = 'group')
 
