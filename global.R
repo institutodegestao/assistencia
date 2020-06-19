@@ -45,19 +45,16 @@ hist_solic_nova$data_historico_solicitacao <- as.Date(hist_solic_nova$data_histo
 # calcular data máxima e mínima
 max_dt_sol <- max(hist_solic_nova$data_solicitacao)
 min_dt_sol <- min(hist_solic_nova$data_solicitacao)
-#typeof(min_dt_sol)
+
 #Acrecenta uma coluna para ajudar na contagem
 hist_solic_nova["cont"]=1
 
-#teste = hist_solic_nova[hist_solic_nova["tipo_leito_sol2"]=="ENFERMARIA", ]
-
+#CRIA O DATAFRAME PARA PLOTAR O GRAFICO
 grafico_hist_solic_nova = hist_solic_nova[ , c(6,2, 9, 26)]
-grafico_hist_solic_nova
-typeof(grafico_hist_solic_nova$data_solicitacao)
-str(grafico_hist_solic_nova$cont)
-#grafico <-  grafico_hist_solic_nova %>% tidyr::pivot_wider(names_from = c(tipo_leito_sol2), values_from = cont, values_fn = sum)
-typeof(grafico$data_solicitacao)
-grafico = dcast(grafico_hist_solic_nova, data_solicitacao ~ tipo_leito_sol2, value.var = "cont")
+
+grafico <-  grafico_hist_solic_nova %>% tidyr::pivot_wider(names_from = c(tipo_leito_sol2), values_from = cont, values_fn = sum)
+grafico <- grafico %>% replace(is.na(.), 0)
+#grafico = dcast(grafico_hist_solic_nova, data_solicitacao ~ tipo_leito_sol2, value.var = "cont")
 grafico["TOTAL"] = grafico["ENFERMARIA"] + grafico["UTI"]
 #grafico
 
@@ -71,10 +68,6 @@ grafico <- grafico %>%
   mutate(utiMM7 = round(rollmean(x = UTI, 7, align = "right", fill = NA),2))
 
 grafico <- grafico %>% replace(is.na(.), 0)
-
-typeof(grafico$data_solicitacao)
-
-#grafico1 <- grafico %>% group_by(data_solicitacao) %>%  summarize(totals = sum(geralMM7))
 
 ##########################
 ### base 3 = solicitacao
@@ -91,7 +84,19 @@ sol_pac$data_sol <- as.Date(sol_pac$data_sol, format = "%d/%m/%y")
 max_dt_sol <- max(sol_pac$data_sol)
 min_dt_sol <- min(sol_pac$data_sol)
 
+#LABLES DOS VALUE BOXES
+lable_ultima = paste("Solicitacoes em ", format(max_dt_sol, "%d/%m/%Y"))
+lable_ultima_uti = paste("Solicitacoes de UTI em ", format(max_dt_sol, "%d/%m/%Y"))
+lable_ultima_enf = paste("Solicitacoes de ENFERMARIA em ", format(max_dt_sol, "%d/%m/%Y"))
 
+grafico_sol = sol_pac[ , c(8,12, 14, 16)]
+grafico_sol <-  grafico_sol %>% tidyr::pivot_wider(names_from = c(tipo2), values_from = sol, values_fn = sum)
+grafico_sol <- grafico_sol %>% replace(is.na(.), 0)
+grafico_sol["TOTAL"] = grafico_sol["ENFERMARIA"] + grafico_sol["UTI"]
+
+# sol_por_data <- grafico_sol %>% group_by(data_sol) %>% summarize(total = sum(TOTAL))
+
+#sol_por_data <- sol_pac %>% group_by(data_sol)  %>% filter(uni_sol == "HOSPITAL OSWALDO CRUZ - RECIFE") %>% summarize(total = sum(sol))
 
 ###########################################################################
 # #CALCULA A QUANTIDADE DE SOLICITAÇÕES DA ÚLTIMA DATA CADASTRADA
@@ -123,3 +128,5 @@ min_dt_sol <- min(sol_pac$data_sol)
 # calculo1 <- hist_solic_nova_final %>% group_by(data_solicitacao, tipo_leito_reg2) %>% summarize(totals = round(median(posicao_fila_espera),digits = 0 ))
 # calculo1
 # calculo1 %>% filter(tipo_leito_reg2 == "UTI")
+
+#https://github.com/institutodegestao/assistencia.git
