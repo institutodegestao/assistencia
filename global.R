@@ -52,12 +52,16 @@ hist_solic_nova["cont"]=1
 #CRIA O DATAFRAME PARA PLOTAR O GRAFICO
 grafico_hist_solic_nova = hist_solic_nova[ , c(6,2, 9, 26)]
 
+<<<<<<< HEAD
 #AGRUPA O DATAFRAME ANTES DE PIVOTAR PARA WIDE. ASSIM, EVITA ERROS DE DUPLICATAS
 grafico_hist_solic_nova <- grafico_hist_solic_nova %>% group_by(unidade_solicitante, data_solicitacao, tipo_leito_sol2) %>% summarise(cont = sum(cont))
 
 ###PIVOTA O DATA FRAME PARA FORMATO LONGO, COM BASE NA COLUNA TIPO DE LEITO
 grafico <-  grafico_hist_solic_nova %>% tidyr::pivot_wider(names_from = c(tipo_leito_sol2), values_from = cont)
 
+=======
+grafico <-  grafico_hist_solic_nova %>% tidyr::pivot_wider(names_from = c("tipo_leito_sol2"), values_from = "cont", values_fn = sum)
+>>>>>>> d2f9d9c5ed1196b49c20c6b09125a6912f54f504
 grafico <- grafico %>% replace(is.na(.), 0)
 #grafico = dcast(grafico_hist_solic_nova, data_solicitacao ~ tipo_leito_sol2, value.var = "cont")
 grafico["TOTAL"] = grafico["ENFERMARIA"] + grafico["UTI"]
@@ -93,7 +97,18 @@ min_dt_sol <- min(sol_pac$data_sol)
 lable_ultima = paste("Solicitacoes em ", format(max_dt_sol, "%d/%m/%Y"))
 lable_ultima_uti = paste("Solicitacoes de UTI em ", format(max_dt_sol, "%d/%m/%Y"))
 lable_ultima_enf = paste("Solicitacoes de ENFERMARIA em ", format(max_dt_sol, "%d/%m/%Y"))
+<<<<<<< HEAD
+=======
 
+grafico_sol = sol_pac[ , c(8,12, 14, 16)]
+grafico_sol <-  grafico_sol %>% tidyr::pivot_wider(names_from = c(tipo2), values_from = sol, values_fn = sum)
+grafico_sol <- grafico_sol %>% replace(is.na(.), 0)
+grafico_sol["TOTAL"] = grafico_sol["ENFERMARIA"] + grafico_sol["UTI"]
+>>>>>>> d2f9d9c5ed1196b49c20c6b09125a6912f54f504
+
+# sol_por_data <- grafico_sol %>% group_by(data_sol) %>% summarize(total = sum(TOTAL))
+
+#sol_por_data <- sol_pac %>% group_by(data_sol)  %>% filter(uni_sol == "HOSPITAL OSWALDO CRUZ - RECIFE") %>% summarize(total = sum(sol))
 
 grafico_sol = sol_pac[ , c(8,12, 14, 16)]
 
