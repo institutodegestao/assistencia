@@ -244,7 +244,7 @@ renderPlotly({
   }
   
 plot_ly() %>%
-add_pie(data = count(mot_bloq, motivo_alteracao_leito), labels = ~motivo_alteracao_leito, values = ~n, name = "Motivo", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(1, 1))) %>%
+add_pie(data = count(mot_bloq, motivo_alteracao_leito), labels = ~motivo_alteracao_leito, values = ~n, name = "Motivo", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(0.2, 0.7))) %>%
   layout(
     title = "Motivo de Alteracao de Leitos",
     legend = list(x = 0, y = 0.9)
@@ -270,7 +270,7 @@ renderPlotly({
   }
   
 plot_ly() %>%
-add_pie(data = count(tipo_leito, tp_leito_executante), labels = ~tp_leito_executante, values = ~n, name = "Motivo", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(1, 1))) %>%
+add_pie(data = count(tipo_leito, tp_leito_executante), labels = ~tp_leito_executante, values = ~n, name = "Motivo", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(0.3, 1))) %>%
   layout(
     title = "Tipo de Leito Executante",
     legend = list(x = 0, y = 0.9)
@@ -319,7 +319,7 @@ renderPlotly({
   }
   
 plot_ly() %>%
-add_pie(data = count(espec_leito, espec_leito_executante), labels = ~espec_leito_executante, values = ~n, name = "Especialidade", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(1, 1))) %>%
+add_pie(data = count(espec_leito, espec_leito_executante), labels = ~espec_leito_executante, values = ~n, name = "Especialidade", textfont = list(color = '#000000', size = 14), domain = list(x = c(0.4, 1), y = c(0.2, 0.9))) %>%
   layout(
     title = "Especialidade do Leito Executante",
     legend = list(x = 0, y = 0.9)
