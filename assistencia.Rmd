@@ -72,7 +72,7 @@ renderValueBox({
 })
 ```
 
-Row {.tabset .tabset-fade}
+Row {data-height=500 .tabset .tabset-fade}
 -------------------------------------
 
 ### Solicitacoes por Unidade
@@ -161,35 +161,30 @@ renderPlotly({
 ### Fila por Data
 
 ```{r}
-# 
-# selectizeInput('selec_tp_leito', 'Unidade', choices = (c('TODOS', sort(as.character(unique(hist_solic_nova_final$tipo_leito_reg2))))), selected = 'TODOS')
-# 
-# renderPlotly({
-# 
-#  if(input$selec_tp_leito == "TODOS") {
-#  #calculo <- round(median(hist_solic_nova_final$posicao_fila_espera), digits = 0)
-#  calculo <- hist_solic_nova_final %>% group_by(data_solicitacao) %>% summarize(totals = round(median(posicao_fila_espera),digits = 0 ))
-#  }
-# 
-#  else {
-#  hist_temp = hist_solic_nova_final %>% filter(tipo_leito_reg2 == input$selec_tp_leito )
-#  #calculo <- round(median(hist_temp$posicao_fila_espera) , digits = 0)
-#  calculo <- hist_solic_nova_final %>% group_by(data_solicitacao)  %>% filter(tipo_leito_reg2 == input$selec_tp_leito) %>% summarize(totals = round(median(posicao_fila_espera),digits = 0 ))
-#  }
-# 
-#   
-# # GRÁFICO DE BARRAS  
-#   x <- calculo$data_solicitacao
-#   y <- calculo$totals
-#   data <- data.frame(x, y)
-#   evol_solicitacao <- plot_ly(data, x = ~x, y = ~y, type = 'bar', name = 'Fila',     domain = list(x=c(0.6, 1), y=c(0,1)), marker = list(color = 'rgb(0,0,139)'))
-#   evol_solicitacao <- evol_solicitacao %>% layout(
-#   xaxis = list(title = "Data"),
-#   yaxis = list(title = "Mediana da Fila"),
-#   margin = list(b = 100),
-#   barmode = 'group')
-# 
-#   evol_solicitacao
+
+selectizeInput('selec_unidade_sol', 'Unidade Solicitante', choices = (c('TODAS', sort(as.character(unique(dt_hist_solic_nova$unidade_solicitante))))), selected = 'TODAS')
+
+# renderPlotly({ 
+renderDataTable({
+  if(input$selec_unidade_sol == "TODAS") {
+   dt <- dt_hist_solic_nova
+ } else {
+    dt <- dt_hist_solic_nova %>% filter(unidade_solicitante == input$selec_unidade_sol)
+}
+
+# p1 <-
+  # plot_ly(
+  #   type = 'table',
+  #   domain = list(x=c(0, 0.5), y=c(0,1)),
+  #   header = list(values = c("Código da Solicitacao", "Solicitante"),
+  #   fill = list(color = c("#A0D1FF", "#41A4FF")),
+  #   font = list(family = "Arial", size = 14, color = "white")),
+  #   cells = list(values = rbind(dt$cod_leito, leito_motivo$desc_saida_alteracao))
+  # )
+ DT::datatable(dt, options=list(scrollY = "250px"))
+# Exibe as colunas: 1,2,6,12,13 e 18
+#p1
+})
 # })
 
 ```
