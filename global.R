@@ -20,6 +20,9 @@ colnames(leito_motivo) <- c('cod_executante', 'motivo_alteracao_leito','status_e
 # tratamentos de colunas
 leito_motivo$data_alteracao <- as.Date(leito_motivo$data_alteracao, format = "%d/%m/%y")
 
+#DT Leito Motivo
+dt_leito_motivo <- leito_motivo[ , c(18:2)]
+
 # calcular data máxima e mínima
 max_dt_alt <- max(leito_motivo$data_alteracao)
 min_dt_alt <- min(leito_motivo$data_alteracao)

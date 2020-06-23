@@ -22,7 +22,7 @@ Column {.sidebar data-width=140}
 -------------------------------------
 
 ```{r}
-dateInput('sel_dt_sol', 'Data', value = max_dt_sol, min = min_dt_sol, max = max_dt_sol, format = 'dd/mm/yyyy')
+#dateInput('sel_dt_sol', 'Data', value = max_dt_sol, min = min_dt_sol, max = max_dt_sol, format = 'dd/mm/yyyy')
  
 ```
 
@@ -44,7 +44,7 @@ Row {data-height=100}
 
 ```{r}
 renderValueBox({
- valueBox(sol_pac %>% filter(data_sol <= input$sel_dt_sol) %>% summarize(total = sum(sol)))
+ valueBox(sol_pac %>% summarize(total = sum(sol)))# %>%  filter(data_sol == max_dt_sol) %>% summarize(total = sum(sol)))
 })
 ```
 
@@ -158,7 +158,7 @@ renderPlotly({
 })
 ```
   
-### Detalhamneto da Fila
+### Detalhamento da Fila
 
 ```{r}
 
@@ -176,7 +176,7 @@ renderDataTable({
 })
 ```
 
-Alteracao de Leitos {data-icon="fa-signal"}
+Alteracao de Leitos {data-icon="fa-chart-bar"}
 ===================================== 
 
 Column {.sidebar data-width=140} 
@@ -193,7 +193,7 @@ Column {.sidebar data-width=140}
 valueBox(Sys.time())
 ```
 
-### Alteracoes ate
+### Dados ate
 
 ```{r}
 valueBox(max_dt_alt)
@@ -339,13 +339,13 @@ p1 <-
   #   font = list(family = "Arial", size = 14, color = "white")),
   #   cells = list(values = rbind(leito_motivo$cod_leito, leito_motivo$desc_saida_alteracao))
   # )
-  datatable(leito_motivo, options=list(scrollY = "300px", columnDefs = list(list(visible=FALSE, targets=c(3, 4, 5, 7, 8, 9, 10, 11, 14, 15, 16, 17, 19)))))
+  datatable(dt_leito_motivo, options=list(scrollY = "300px"))
 # Exibe as colunas: 1,2,6,12,13 e 18
 p1
 
 ```
 
-Em Construcao {data-icon="fa-signal"}
+Em Construcao {data-icon="fa-chart-bar"}
 ===================================== 
 
 ```{r painel controle de tornozeleiras}
